@@ -35,7 +35,7 @@ function loadURL(){
 
 venom
   .create(
-    'sessionName',
+    'bot-session',
     (base64Qr, asciiQR, attempts, urlCode) => {
       var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
         response = {};
@@ -47,7 +47,7 @@ venom
       response.data = new Buffer.from(matches[2], 'base64');
 
       var imageBuffer = response;
-      require('fs').writeFile(
+      fs.writeFile(
         'qr-code-session.png',
         imageBuffer['data'],
         'binary',

@@ -19,6 +19,7 @@
   "description": "",
   "dependencies": {
     "electron": "^15.3.0",
+    "electron-packager": "^15.4.0",
     "venom-bot": "^3.1.11"
   }
 }
