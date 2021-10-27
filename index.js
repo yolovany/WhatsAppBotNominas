@@ -1,36 +1,9 @@
 // Supports ES6
 // import { create, Whatsapp } from 'venom-bot';
 const venom = require('venom-bot');
-const { app, BrowserWindow } = require('electron');
 const url = require('url');
 const path = require('path');
 const fs = require('fs');
-let qrWindow;
-
-
-app.on('ready', () =>{
-  if (BrowserWindow.getAllWindows().length === 0) {
-    qrWindow = new BrowserWindow({
-      width: 350,
-      height: 350,
-      title:"WhatsAppBotNomina"
-    });
-    qrWindow.on("closed", () => {
-      app.quit();
-    });
-    qrWindow.setMenu(null);
-    loadURL();
-  }
-});
-
-
-function loadURL(){
-  qrWindow.loadURL(url.format({
-    pathname: path.join(__dirname, "qr-window.html"),
-    protocol: "file",
-    slashes: true
-  }));
-}
 
 
 venom
@@ -54,9 +27,6 @@ venom
         function (err) {
           if (err != null) {
             console.log(err);
-          }
-          else {
-            loadURL();
           }
         }
       );
