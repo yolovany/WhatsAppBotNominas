@@ -8,24 +8,29 @@ const fs = require('fs');
 let qrWindow;
 
 
-/*
-if(process.env.NODE_ENV !== 'production'){
-    require('electron-reload')(__dirname, {
-        electron: path.join(__dirname, "node_modules", ".bin", "electron")
-    });
-}
-
 app.on('ready', () =>{
   if (BrowserWindow.getAllWindows().length === 0) {
-    const win = new BrowserWindow({
-      width: 800,
-      height: 600,
+    qrWindow = new BrowserWindow({
+      width: 350,
+      height: 350,
+      title:"WhatsAppBotNomina"
     });
-    win.loadFile('main-window.html');
-    win.setMenu(null);
+    qrWindow.on("closed", () => {
+      app.quit();
+    });
+    qrWindow.setMenu(null);
+    loadURL();
   }
 });
-*/
+
+
+function loadURL(){
+  qrWindow.loadURL(url.format({
+    pathname: path.join(__dirname, "qr-window.html"),
+    protocol: "file",
+    slashes: true
+  }));
+}
 
 
 venom
@@ -51,7 +56,7 @@ venom
             console.log(err);
           }
           else {
-            openQRSessionWindow();
+            loadURL();
           }
         }
       );
@@ -66,23 +71,6 @@ venom
     console.log(erro);
   });
 
-  function openQRSessionWindow(){
-
-    qrWindow = new BrowserWindow({
-      width: 600,
-      height: 600,
-      title:"WhatsApp Bot (nominas)"
-    });
-    qrWindow.loadURL(url.format({
-      pathname: path.join(__dirname, "qr-window.html"),
-      protocol: "file",
-      slashes: true
-    }));
-    qrWindow.setMenu(null);
-    qrWindow.on("closed", () => {
-      qrWindow = null;
-    });
-  }
 
 function start(client) {
   client.onMessage((message) => {
