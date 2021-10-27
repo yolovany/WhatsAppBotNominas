@@ -1,13 +1,89 @@
 // Supports ES6
 // import { create, Whatsapp } from 'venom-bot';
 const venom = require('venom-bot');
+const { app, BrowserWindow } = require('electron');
+const url = require('url');
+const path = require('path');
+const fs = require('fs');
+let qrWindow;
+
+
+/*
+if(process.env.NODE_ENV !== 'production'){
+    require('electron-reload')(__dirname, {
+        electron: path.join(__dirname, "node_modules", ".bin", "electron")
+    });
+}
+
+app.on('ready', () =>{
+  if (BrowserWindow.getAllWindows().length === 0) {
+    const win = new BrowserWindow({
+      width: 800,
+      height: 600,
+    });
+    win.loadFile('main-window.html');
+    win.setMenu(null);
+  }
+});
+*/
+
 
 venom
-  .create()
-  .then((client) => start(client))
+  .create(
+    'sessionName',
+    (base64Qr, asciiQR, attempts, urlCode) => {
+      console.log(asciiQR); // Optional to log the QR in the terminal
+      var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+        response = {};
+
+      if (matches.length !== 3) {
+        return new Error('Invalid input string');
+      }
+      response.type = matches[1];
+      response.data = new Buffer.from(matches[2], 'base64');
+
+      var imageBuffer = response;
+      require('fs').writeFile(
+        'qr-code-session.png',
+        imageBuffer['data'],
+        'binary',
+        function (err) {
+          if (err != null) {
+            console.log(err);
+          }
+          else {
+            openQRSessionWindow();
+          }
+        }
+      );
+    },
+    undefined,
+    { logQR: false }
+  )
+  .then((client) => {
+    start(client);
+  })
   .catch((erro) => {
     console.log(erro);
   });
+
+  function openQRSessionWindow(){
+
+    qrWindow = new BrowserWindow({
+      width: 600,
+      height: 600,
+      title:"WhatsApp Bot (nominas)"
+    });
+    qrWindow.loadURL(url.format({
+      pathname: path.join(__dirname, "qr-window.html"),
+      protocol: "file",
+      slashes: true
+    }));
+    qrWindow.setMenu(null);
+    qrWindow.on("closed", () => {
+      qrWindow = null;
+    });
+  }
 
 function start(client) {
   client.onMessage((message) => {
