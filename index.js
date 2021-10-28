@@ -1,15 +1,67 @@
 // Supports ES6
 // import { create, Whatsapp } from 'venom-bot';
 const venom = require('venom-bot');
-const url = require('url');
+
+/*
+venom
+  .create()
+  .then((client) => start(client))
+  .catch((erro) => {
+    console.log(erro);
+  });
+
+function start(client) {
+  client.onMessage((message) => {
+    if (message.body === 'Hi' && message.isGroupMsg === false) {
+      client
+        .sendText(message.from, 'Welcome Venom 🕷')
+        .then((result) => {
+          console.log('Result: ', result); //return object success
+        })
+        .catch((erro) => {
+          console.error('Error when sending: ', erro); //return object error
+        });
+    }
+  });
+}
+*/
+
+
 const path = require('path');
 const fs = require('fs');
+const express = require('express');
+const app = express();
+const port = 3000;
 
 
-venom
+app.use(express.static(__dirname));
+app.get('/', (req, res) => {
+  openWhatsAppBotClient();
+  res.send("Cargando, por favor espere...");
+})
+
+
+app.get('/refresh', (req, res) => {
+  fs.readFile(path.join(__dirname, "qr-window.html"), 'utf8', (error, datos) => {
+    if (error) {
+      datos = "Cargando, por favor espere..."
+    }
+    res.send(datos);
+  });
+})
+
+
+app.listen(port, () => {
+  console.log(`WhatsAppBot listening at http://localhost:${port}`)
+})
+
+
+function openWhatsAppBotClient(){
+  venom
   .create(
-    'bot-session',
+    'sessionName',
     (base64Qr, asciiQR, attempts, urlCode) => {
+      console.log(asciiQR); // Optional to log the QR in the terminal
       var matches = base64Qr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
         response = {};
 
@@ -40,6 +92,7 @@ venom
   .catch((erro) => {
     console.log(erro);
   });
+}
 
 
 function start(client) {
